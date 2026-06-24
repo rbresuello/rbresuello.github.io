@@ -688,11 +688,14 @@
         const form = document.querySelector('form');
         if (form) {
             form.addEventListener('submit', function(e) {
+                e.preventDefault();
+                
                 const name = this.querySelector('input[type="text"]:first-of-type').value;
+                const company = this.querySelector('input[type="text"]:nth-of-type(2)').value;
                 const email = this.querySelector('input[type="email"]').value;
+                const message = this.querySelector('textarea').value;
                 
                 if (!name || !email) {
-                    e.preventDefault();
                     alert('Please fill in all required fields.');
                     return;
                 }
@@ -758,6 +761,24 @@
                         modal.remove();
                     }
                 });
+                
+                // Send form data to Formspree in the background
+                const formData = new FormData();
+                formData.append('name', name);
+                formData.append('company', company);
+                formData.append('email', email);
+                formData.append('message', message);
+                
+                fetch('https://formspree.io/f/mwvdvkqp', {
+                    method: 'POST',
+                    body: formData,
+                    headers: {
+                        'Accept': 'application/json'
+                    }
+                }).catch(err => console.log('Form submitted'));
+                
+                // Reset form
+                this.reset();
             });
         }
 
